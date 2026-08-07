@@ -1,0 +1,3 @@
+# re-derivable pulls (yfinance / macrotrends / CBOE / FRED / dollar & rate proxies); the dated
+# report + valuation/complex/events snapshots in store/ stay tracked (the files ARE the record).
+store/cache/

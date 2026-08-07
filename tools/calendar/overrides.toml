@@ -1,0 +1,145 @@
+# Forced-Flow Calendar — hand-maintained data layer (paste-slots + dates rules can't know).
+# Seeded 2026-07-06 from wiki/market-research/july-2026-event-calendar.md (as-of Jul-4, updated Jul-6).
+# confirmed = true  -> verified on a primary/reliable source (the wiki page's checkmark rows)
+# confirmed = false -> pattern/aggregator estimate; pin on IR before relying on it.
+# NOTE: top-level arrays MUST stay above the [meta]/[f13]/[krx_holidays] table headers (TOML nesting).
+
+# ---- F8/F15: earnings & scheduled prints ------------------------------------------------------
+# market: "US" dates are US calendar dates (session AMC/BMO sets the KST render);
+#         "KR"/"EU"/"TW" dates are already KST dates with explicit time_kst.
+earnings = [
+  { ticker = "005930.KS", label = "Samsung Q2 PRELIMINARY (rev+OP)", market = "KR", date = 2026-07-07, time_kst = "08:30", confirmed = true,  size = "L",  note = "FnGuide cons OP ~W85.5T (record, 18x YoY); sprint Day 1" },
+  { ticker = "ASML",      label = "ASML Q2 results",                 market = "EU", date = 2026-07-15, time_kst = "14:00", confirmed = true,  size = "L",  note = "capex-cycle tell (orders/bookings); ADR reacts 22:30 KST" },
+  { ticker = "TSM",       label = "TSMC Q2 results + Q3 guide",      market = "TW", date = 2026-07-16, time_kst = "15:00", confirmed = true,  size = "L",  note = "biggest fundamental print of the month; lands INTO the KRX close" },
+  { ticker = "NFLX",      label = "Netflix Q2 (season opener)",      market = "US", date = 2026-07-16, session = "AMC",    confirmed = false, size = "S",  note = "watch-tier; risk-appetite tell" },
+  { ticker = "TXN",       label = "Texas Instruments Q2",            market = "US", date = 2026-07-21, session = "AMC",    confirmed = false, size = "S",  note = "watch-tier; non-AI semis cycle tell" },
+  { ticker = "005930.KS", label = "Samsung FULL Q2 + call",          market = "KR", date = 2026-07-23, time_kst = "09:00", confirmed = false, size = "L",  note = "division detail: memory OP, HBM commentary vs Jul-7 prelim reaction" },
+  { ticker = "INTC",      label = "Intel Q2",                        market = "US", date = 2026-07-23, session = "AMC",    confirmed = false, size = "S",  note = "watch-tier" },
+  { ticker = "STM",       label = "STMicro Q2",                      market = "EU", date = 2026-07-23, time_kst = "14:30", confirmed = false, size = "S",  note = "watch-tier" },
+  { ticker = "MSFT",      label = "Microsoft FY26-Q4",               market = "US", date = 2026-07-28, session = "AMC",    confirmed = false, size = "L",  note = "hyperscaler capex guide #2; some sources say Jul 29 - PIN IT" },
+  { ticker = "000660.KS", label = "SK hynix Q2 results + call",      market = "KR", date = 2026-07-29, time_kst = "08:30", confirmed = false, size = "XL", note = "THE thesis print: HBM4 pricing/allocation; sheet + base-rate table mandatory" },
+  { ticker = "META",      label = "Meta Q2",                         market = "US", date = 2026-07-29, session = "AMC",    confirmed = true,  size = "L",  note = "hyperscaler capex guide #3" },
+  { ticker = "LRCX",      label = "Lam Research Q2",                 market = "US", date = 2026-07-29, session = "AMC",    confirmed = false, size = "S",  note = "watch-tier; WFE tell" },
+  { ticker = "AAPL",      label = "Apple FQ3",                       market = "US", date = 2026-07-30, session = "AMC",    confirmed = true,  size = "L",  note = "device demand + memory-cost commentary" },
+  { ticker = "AMZN",      label = "Amazon Q2",                       market = "US", date = 2026-07-30, session = "AMC",    confirmed = false, size = "L",  note = "hyperscaler capex guide #4 (AWS); often same night as AAPL - confirm" },
+  # forward anchors so the blackout gauge has August/September shape (estimates; pin later):
+  { ticker = "NVDA",      label = "NVIDIA Q2 FY27",                  market = "US", date = 2026-08-26, session = "AMC",    confirmed = false, size = "XL", note = "estimated (late Aug per wiki); July capex guides are the setup" },
+  { ticker = "MU",        label = "Micron FQ4-2026",                 market = "US", date = 2026-09-24, session = "AMC",    confirmed = false, size = "XL", note = "estimated from FQ cadence; pin when announced" },
+]
+
+# ---- F12: KR macro the rules can't derive -----------------------------------------------------
+macro_kr = [
+  { label = "BOK rate decision", date = 2026-07-09, time_kst = "10:00", confirmed = false, size = "L", note = "presser ~11:10; minutes showed 5-2 split w/ hike dissent -> live meeting; confirm on bok.or.kr" },
+]
+
+# ---- F5 supplement: US macro without a clean rule (PCE, QRA, auctions) ------------------------
+macro_us = [
+  { label = "US PCE (June data)", date = 2026-07-31, time_et = "08:30", confirmed = false, size = "M", note = "BEA month-end pattern; inflation print into the post-FOMC tape" },
+]
+
+# ---- F7/F10 + one-offs: things with dates but no rule -----------------------------------------
+oneoffs = [
+  { label = "SK Hynix ADR begins trading (Nasdaq)", market = "US", date = 2026-07-10, size = "M", direction = "two_way", confirmed = true, mechanics = "Structural access flow: first US-hours HBM pure-play; MU scarcity-premium test - watch MU-vs-ADR RS from day 1", uses = ["risk", "attribution"] },
+  { label = "Alphabet Q2 (date UNPINNED)", market = "US", date = 2026-07-21, end_date = 2026-07-28, size = "M", direction = "vol", confirmed = false, mechanics = "Hyperscaler capex guide #1 - the master variable; window Jul 21-28, check IR", uses = ["risk"] },
+]
+
+# ---- F4: month-end estimate paste-slots (fill when a bank number is published) ----------------
+monthend_estimates = [
+  { month = 2026-07-01, estimate = "", source = "" },   # e.g. estimate = "$XXB equities sell", source = "JPM note YYYY-MM-DD"
+]
+
+# ---- F10: lockup expirations (watchlist-scoped; none tracked yet) -----------------------------
+lockups = []
+
+# ---- F18: policy dates (ONLY the dated minority: effective dates, comment deadlines, statutory
+#           review clocks, VEU/license windows; most policy shocks are undated -> classifier's job)
+policy = []
+# example:
+# policy = [
+#   { label = "BIS export-rule effective date (announced)", date = 2026-08-15, market = "BOTH", size = "L", confirmed = true, note = "what changes + who is forced" },
+# ]
+
+# ---- watch_for: pre-registered questions per print (item 5) -----------------------------------
+# Key lookup order: "TICKER@YYYY-MM-DD" (specific print) then "TICKER" (default); macro events by exact label.
+[watch_for]
+"005930.KS@2026-07-07" = [
+  "OP vs the W85.5T record consensus - beat size?",
+  "Implied memory-division strength (prelim = rev+OP only; no detail until Jul-23)",
+  "Sympathy check: do SKH/MU confirm the read, or fade it? (attribution rep)",
+]
+"005930.KS@2026-07-23" = [
+  "Memory OP split + HBM commentary vs the Jul-7 prelim reaction",
+  "HBM4 qualification progress at NVDA",
+  "Foundry losses narrowing?",
+]
+"000660.KS" = [
+  "HBM4 pricing premium vs HBM3E - the thesis variable",
+  "2027 LTA/allocation coverage - any 'fully committed' language (T8)",
+  "Customer inventory weeks (T4) + NAND capex discipline (T7)",
+]
+"ASML" = [
+  "Bookings (the WFE forward tell) - memory vs logic mix",
+  "2026/27 outlook language vs the capex-discipline narrative (T7-adjacent)",
+]
+"TSM" = [
+  "AI revenue growth guide - raised again?",
+  "CoWoS/advanced-packaging capacity adds (HBM demand proxy)",
+  "Full-year capex guide direction (T3-adjacent)",
+]
+"MSFT" = [
+  "FY27 capex guide direction (T3) - any 'digestion/optimization' language",
+  "Azure AI revenue/backlog disclosure",
+]
+"META" = [
+  "2026/27 capex guide (T3) - compute-constraint language",
+  "Depreciation-schedule changes (accounting tell on GPU useful life)",
+]
+"AAPL" = [
+  "Memory-cost / BOM commentary (the 'Apple blames memory costs' thread)",
+  "Device demand + China trajectory",
+]
+"AMZN" = [
+  "AWS capex guide (T3) + AI capacity-constraint language",
+  "Trainium-vs-GPU mix commentary (custom-ASIC watch)",
+]
+"NVDA" = [
+  "Rubin ramp timing + HBM allocation commentary (T8)",
+  "Is HBM named as the binding supply constraint again?",
+  "China licensing status",
+]
+"MU" = [
+  "FQ1 guide vs the sold-out narrative",
+  "HBM share/mix + bit-ASP trajectory (T2 cross-check)",
+]
+"BOK rate decision" = [
+  "Vote split - hike-dissent count vs the 5-2 minutes",
+  "FX-defense vs household-debt language (rate-path read)",
+]
+
+# ================================================================================================
+[meta]
+# names whose buyback-blackout windows we track (blackout = [earnings-35d, earnings+2 trading days])
+blackout_watchlist = ["MU", "NVDA", "MSFT", "META", "AAPL", "AMZN", "005930.KS", "000660.KS"]
+short_sale_ban = false          # KR short-sale-ban regime state (F14 flag)
+
+# ---- F13: cascade-morning flags (manual v0; Tool-1 KOFIA join later) --------------------------
+[f13]
+kospi_down_days = []      # add YYYY-MM-DD dates of big down days -> next KR morning gets flagged
+margin_z = 0.0            # KOFIA margin-balance z-score (from the flow engine when it exists)
+
+# ---- F14: KRX holidays (VERIFY annually; substitutes best-effort) -----------------------------
+[krx_holidays]
+y2026 = [
+  2026-01-01,             # New Year
+  2026-02-16, 2026-02-17, 2026-02-18,   # Seollal
+  2026-03-02,             # Mar-1 movement (Sun -> Mon substitute)
+  2026-05-05,             # Children's Day
+  2026-05-25,             # Buddha's Birthday (May 24 Sun -> Mon substitute)
+  2026-06-03,             # local elections day (market holiday)
+  2026-08-17,             # Liberation Day (Aug 15 Sat -> Mon substitute)
+  2026-09-24, 2026-09-25, 2026-09-28,   # Chuseok (Sep 26 Sat -> Mon 28 substitute)
+  2026-10-05,             # Foundation Day (Oct 3 Sat -> Mon substitute)
+  2026-10-09,             # Hangul Day
+  2026-12-25,             # Christmas
+  2026-12-31,             # KRX year-end closure
+]

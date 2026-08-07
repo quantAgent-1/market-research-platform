@@ -1,0 +1,264 @@
+# muval assumptions — every valuation lever, data-anchored, user-editable.
+# Anchors cited from FY2012-FY2025 actuals (macrotrends cache) and FY2026 quarterlies
+# (yfinance cache) as of 2026-07-11. Edit and re-run: python tools/muval/muval.py --offline
+
+[wacc]
+erp = 0.046            # equity risk premium (Damodaran-class US estimate)
+beta_window_years = 5  # weekly regression vs SPY
+beta_shrink = 0.667    # Blume shrink toward 1.0 (raw 5y beta ~2.1 -> ~1.7)
+beta_floor = 1.2
+beta_cap = 2.2
+kd_spread = 0.012      # cost of debt = rf + spread (MU is IG, net cash anyway)
+tax_rate = 0.15        # FY2026 effective ~15% (quarterly tax/pretax)
+
+[terminal]
+g = 0.025              # perpetual nominal growth <= nominal GDP
+exit_ev_ebitda = 8.0   # memory through-cycle exit multiple cross-check
+
+[montecarlo]
+n = 20000
+seed = 7
+# jitters (1 sigma), applied within the drawn scenario:
+sd_fy27_rev = 0.10
+sd_trough_frac = 0.07
+sd_steady_frac = 0.08
+sd_nm_steady = 0.04
+sd_wacc = 0.010
+sd_g = 0.004
+
+[riskvol]
+factor_years_daily = 3
+beta_years_weekly = 5
+vol_cone_years = 10
+garch_years = 10
+
+# ---------------------------------------------------------------------- names
+# Per-name fiscal calendar. fy0 = the current (in-progress) fiscal year; fye_month =
+# the calendar month that fiscal year ends in (fy_end() approximates the exact date
+# as the 28th of that month). The explicit DCF horizon last_fy = fy0 + 10 (this
+# replaces the old global [horizon] section, which was MU-only: last_fy=2036=2026+10).
+
+[names.MU]
+fy0 = 2026
+fye_month = 8
+
+[names.NVDA]
+fy0 = 2027
+fye_month = 1
+
+[names.AMD]
+fy0 = 2026
+fye_month = 12
+
+# ------------------------------------------------------------------ scenarios
+# Common anchors: FY2026 = consensus ($129.6B rev, EPS $73.3; 3 quarters already
+# reported: 13.6 + 23.9 + 41.5 = $79.0B). FY2027 consensus $234.2B rev / EPS $149.6
+# (implied net margin ~72%). Modern-era (FY2012+) stats: revenue drawdowns -24%,
+# -29%, -49%; net margin median 18.3% / max 46.5% (FY2018) / min -37.5% (FY2023);
+# capex/rev median 34.8%; cumulative FCF/NI conversion 0.37. FY2026 boom actuals:
+# capex ~25% of rev, D&A ~6%, tax ~15%, NWC build ~12% of incremental revenue.
+
+[scenarios.MU.A]
+name = "AI-memory rents persist"
+prob = 0.25
+# HBM long-term agreements hold; custom memory earns logic-like economics for years.
+fy27_rev_vs_consensus = 1.00   # FY27 = consensus $234B
+peak_extra_years = 1           # one more growth year after FY27
+peak_extra_growth = 0.10
+trough_frac_of_peak = 0.80     # mild digestion (-20%), FY19-class in a bigger market
+steady_frac_of_peak = 0.90     # normalizes near the peak
+steady_growth = 0.08
+nm_peak = 0.62                 # below the ~72% consensus print (fade begins)
+nm_trough = 0.35
+nm_steady = 0.38               # NVDA-class; assumes durable custom-silicon moat
+capex_boom = 0.25              # FY2026 actual
+capex_trough = 0.26
+capex_steady = 0.24
+
+[scenarios.MU.B]
+name = "Supercycle, then a normal memory cycle at a higher plateau"
+prob = 0.45
+# The base case: contracts are real but 2028-29 brings classic digestion; HBM mix
+# keeps mid-cycle margins above the 18% historical median, below logic margins.
+fy27_rev_vs_consensus = 0.85   # ~$199B; spot rolls before the fiscal year closes
+peak_extra_years = 0
+peak_extra_growth = 0.0
+trough_frac_of_peak = 0.50     # between the -29% (FY20) and -49% (FY23) prints
+steady_frac_of_peak = 0.65     # plateau ~= FY2026 revenue
+steady_growth = 0.07
+nm_peak = 0.58
+nm_trough = 0.10               # trough stays positive: LTA floor + richer mix
+nm_steady = 0.25               # above 18.3% median: structural HBM uplift, competed
+capex_boom = 0.30
+capex_trough = 0.30            # capex is sticky into downturns (FY23: 49% of rev)
+capex_steady = 0.30
+
+[scenarios.MU.C]
+name = "Bust / commoditization"
+prob = 0.30
+# Samsung qualifies everywhere, CXMT scales, AI capex digests: HBM premium collapses
+# and the cycle trough rhymes with FY2023.
+fy27_rev_vs_consensus = 0.65   # ~$152B; cancellations and repricing
+peak_extra_years = 0
+peak_extra_growth = 0.0
+trough_frac_of_peak = 0.35     # worse than FY23's -49%: AI hoarding unwinds too
+steady_frac_of_peak = 0.45
+steady_growth = 0.05
+nm_peak = 0.50
+nm_trough = -0.15              # FY2023 printed -37.5%
+nm_steady = 0.16               # below median: overcapacity era
+capex_boom = 0.33
+capex_trough = 0.35
+capex_steady = 0.33
+
+[cash_mechanics.MU]
+dna_start = 0.06               # D&A % of revenue today (trailing asset base)
+dna_converge_years = 5         # D&A converges toward steady capex over ~5y (fab lives)
+dna_vs_capex_steady = 0.85     # steady-state D&A ~= 85% of steady capex (growth firm)
+nwc_pct_of_delta_rev = 0.12    # FY2026 actual working-capital build
+dilution_per_year = 0.003      # share creep net of buybacks
+
+[normalized.MU]
+# The "pure cycle, no structural break" bracket -- the full-commoditization limit.
+window_start = 2012            # modern era: post-Elpida three-supplier oligopoly
+trend_fit_start = 2012
+pe_band_low = 10.0
+pe_band_high = 15.0
+pb_roe_g = 0.04                # justified P/B growth term
+
+# NVDA anchors (data as of 2026-07-11): FY2026 (ended Jan-26) actual rev $215.9B, NI $120.1B
+# (55.6% NM); latest quarter (Apr-26) rev $81.6B, NM 71.5%. Consensus FY2027 rev $392.6B /
+# EPS $8.97 (implied NM ~55%), FY2028 rev $554.4B / EPS $12.76. Price $210.96, mcap $5.11T,
+# fwd P/E 16.5, net cash ~$40B. Fabless: capex ~6% of revenue, D&A ~1.5%.
+
+[scenarios.NVDA.A]
+name = "Platform monopoly compounds"
+prob = 0.30
+fy27_rev_vs_consensus = 1.00   # FY2027 = consensus $393B
+peak_extra_years = 1
+peak_extra_growth = 0.41       # FY2028 = consensus $554B
+trough_frac_of_peak = 0.85     # mild digestion only
+steady_frac_of_peak = 1.00
+steady_growth = 0.10
+nm_peak = 0.56
+nm_trough = 0.45
+nm_steady = 0.50
+capex_boom = 0.06
+capex_trough = 0.07
+capex_steady = 0.06
+
+[scenarios.NVDA.B]
+name = "AI-capex digestion cycle"
+prob = 0.45
+fy27_rev_vs_consensus = 0.92   # ~$361B; hyperscaler capex plateaus into the fiscal year
+peak_extra_years = 1
+peak_extra_growth = 0.20       # peak ~$433B in FY2028, below the $554B consensus
+trough_frac_of_peak = 0.60     # digestion + custom-ASIC share loss
+steady_frac_of_peak = 0.75
+steady_growth = 0.08
+nm_peak = 0.55
+nm_trough = 0.35
+nm_steady = 0.42
+capex_boom = 0.06
+capex_trough = 0.08
+capex_steady = 0.06
+
+[scenarios.NVDA.C]
+name = "Cisco analog / circular-financing unwind"
+prob = 0.25
+fy27_rev_vs_consensus = 0.80   # ~$314B; orders air-pocket
+peak_extra_years = 0
+peak_extra_growth = 0.0
+trough_frac_of_peak = 0.40
+steady_frac_of_peak = 0.50
+steady_growth = 0.06
+nm_peak = 0.50
+nm_trough = 0.20
+nm_steady = 0.30               # still excellent economics, but competed
+capex_boom = 0.07
+capex_trough = 0.08
+capex_steady = 0.06
+
+[cash_mechanics.NVDA]
+dna_start = 0.015
+dna_converge_years = 5
+dna_vs_capex_steady = 0.9
+nwc_pct_of_delta_rev = 0.10
+dilution_per_year = 0.001      # buybacks roughly offset grants
+
+[normalized.NVDA]
+window_start = 2012
+trend_fit_start = 2012
+pe_band_low = 18.0             # through-cycle quality-growth band, not a memory band
+pe_band_high = 28.0
+pb_roe_g = 0.04
+
+# AMD anchors (data as of 2026-07-11): FY2025 actual rev $34.6B, GAAP NI $4.3B (12.5% NM);
+# latest quarter (Mar-26) rev $10.3B. Consensus FY2026 rev $49.5B / EPS $7.41 (implied NM
+# ~24%), FY2027 rev $77.1B / EPS $13.28 (implied NM ~28%). Price $557.89, mcap $910B,
+# trailing P/E 182 vs fwd 42. CAUTION: AMD consensus EPS is street basis (excludes the
+# Xilinx intangible amortization) — so dna_start below is TANGIBLE-only D&A (~3.5% of
+# revenue) to avoid double-counting the amortization add-back, and the nm_ paths already
+# absorb roughly the SBC drag. GAAP-vs-street is a stated model limit for this name.
+
+[scenarios.AMD.A]
+name = "Credible second source at scale"
+prob = 0.30
+fy27_rev_vs_consensus = 1.00   # FY2027 = consensus $77B
+peak_extra_years = 1
+peak_extra_growth = 0.30       # ~$100B FY2028
+trough_frac_of_peak = 0.85
+steady_frac_of_peak = 1.00
+steady_growth = 0.12
+nm_peak = 0.28
+nm_trough = 0.20
+nm_steady = 0.25
+capex_boom = 0.05
+capex_trough = 0.06
+capex_steady = 0.05
+
+[scenarios.AMD.B]
+name = "Structural #2, still cyclical"
+prob = 0.45
+fy27_rev_vs_consensus = 0.85   # ~$66B
+peak_extra_years = 0
+peak_extra_growth = 0.0
+trough_frac_of_peak = 0.65
+steady_frac_of_peak = 0.80
+steady_growth = 0.10
+nm_peak = 0.25
+nm_trough = 0.12
+nm_steady = 0.18
+capex_boom = 0.05
+capex_trough = 0.06
+capex_steady = 0.05
+
+[scenarios.AMD.C]
+name = "Squeezed between NVDA and custom silicon"
+prob = 0.25
+fy27_rev_vs_consensus = 0.70   # ~$54B
+peak_extra_years = 0
+peak_extra_growth = 0.0
+trough_frac_of_peak = 0.50
+steady_frac_of_peak = 0.60
+steady_growth = 0.06
+nm_peak = 0.22
+nm_trough = 0.05
+nm_steady = 0.10               # the old AMD
+capex_boom = 0.06
+capex_trough = 0.06
+capex_steady = 0.05
+
+[cash_mechanics.AMD]
+dna_start = 0.035              # tangible-only (see caution above)
+dna_converge_years = 5
+dna_vs_capex_steady = 1.0
+nwc_pct_of_delta_rev = 0.12
+dilution_per_year = 0.005
+
+[normalized.AMD]
+window_start = 2012
+trend_fit_start = 2012
+pe_band_low = 15.0
+pe_band_high = 25.0
+pb_roe_g = 0.04

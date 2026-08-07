@@ -1,0 +1,40 @@
+# Secrets & local env
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+dist/
+build/
+
+# Data lakes & local stores (never commit)
+**/store/
+**/*.parquet
+**/*.duckdb
+**/*.db
+**/*.sqlite
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Private export machinery (if re-run locally)
+_export_from_private.py
+.export_cache/
+
+# Jupyter
+.ipynb_checkpoints/

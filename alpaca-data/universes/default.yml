@@ -1,0 +1,41 @@
+# Symbol universes for backfills.
+#   --universe default:ai_semis   -> just that group
+#   --universe default            -> union of all groups
+#   --symbols NVDA,AMD            -> ad-hoc list (no file needed)
+
+ai_semis:           # AI / semiconductor leaders (see wiki/.../semiconductors.md)
+  - NVDA
+  - AMD
+  - AVGO
+  - TSM
+  - MU
+  - ASML
+  - SMCI
+  - ARM
+  - INTC
+  - QCOM
+  - TXN
+  - LRCX
+  - AMAT
+  - KLAC
+  - MRVL
+  - ADI
+  - NXPI
+  - "ON"     # quoted: bare ON is parsed as boolean true by YAML
+
+index_etfs:         # broad + sector ETFs for regime/benchmark work
+  - SPY
+  - QQQ
+  - IWM
+  - DIA
+  - SOXX
+  - SMH
+  - XLK
+
+mega_tech:
+  - AAPL
+  - MSFT
+  - GOOGL
+  - AMZN
+  - META
+  - TSLA

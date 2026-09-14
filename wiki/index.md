@@ -1,7 +1,7 @@
 ---
 type: index
 title: Wiki — Index
-description: Catalog of the Markets Research Lab knowledge base (OKF-style bundle).
+description: Catalog of the Market Research Platform knowledge base (OKF-style bundle).
 timestamp: 2026-08-07T00:00:00Z
 ---
 

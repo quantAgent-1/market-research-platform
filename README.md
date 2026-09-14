@@ -1,4 +1,4 @@
-# Markets Research Lab
+# Market Research Platform
 
 **Hyunsuk Yang** · Systematic trading · Research engineering · Semiconductor / AI markets · AI-agent research ops
 

@@ -2,7 +2,7 @@
 
 **Author:** Hyunsuk Yang  
 
-> **Recruiters / hiring managers:** start with the **Markets Research Lab** landing page **[README.md](README.md)**  
+> **Recruiters / hiring managers:** start with the **Market Research Platform** landing page **[README.md](README.md)**  
 > (interests, skills, and **AI-agent workflow**). This file is an optional deeper matrix.
 
 This is not a claim of trading performance. It is a map of **process quality, technical build skill, and domain judgment** under explicit honesty constraints.

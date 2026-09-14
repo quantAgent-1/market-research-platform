@@ -1,6 +1,6 @@
-# CLAUDE.md — Markets Research Lab Schema
+# CLAUDE.md — Market Research Platform Schema
 
-This directory is the **Markets Research Lab** public knowledge base (LLM-wiki pattern; see `meta/llm-wiki.md`)
+This directory is the **Market Research Platform** public knowledge base (LLM-wiki pattern; see `meta/llm-wiki.md`)
 conformant with a lightweight **Open Knowledge Format** style: YAML frontmatter + interlinked markdown.
 
 The maintainer is responsible for keeping pages atomic, cross-linked, and free of personal account data.
